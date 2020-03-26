@@ -196,6 +196,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, PermissionListener
 
     override fun onPermissionGranted(response: PermissionGrantedResponse?) {
         getCurrentLocation()
+        mMap.isMyLocationEnabled = true
     }
 
     override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken?) {
