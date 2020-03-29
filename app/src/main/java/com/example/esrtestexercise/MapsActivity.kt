@@ -33,7 +33,6 @@ import org.json.JSONObject
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, PermissionListener {
 
-    private val esrApi: String = "https://tatooine.eatsleepride.com/api/v5/feed/nearby?lat=40.6338031&lng=14.6002813"
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -54,7 +53,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, PermissionListener
      */
 
     // function for network call
-    fun getData() {
+    fun getData(location: LatLng) {
+        val esrApi: String = "https://tatooine.eatsleepride.com/api/v5/feed/nearby?lat=${location.latitude}&lng=${location.longitude}"
         // Instantiate the RequestQueue
         val queue = Volley.newRequestQueue(this)
 
@@ -127,6 +127,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, PermissionListener
         if (isLocationPermissionGranted()){
             googleMap.isMyLocationEnabled = true
             getCurrentLocation()
+            fusedLocationProviderClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    //gets API data and places on mMap
+                    getData(LatLng(location!!.latitude, location!!.longitude))
+                }
         } else {
             // Dexter makes requesting permissions easier
             // https://github.com/Karumi/Dexter
@@ -135,9 +140,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, PermissionListener
                 .withListener(this)
                 .check()
         }
-
-        //gets API data and places on mMap
-        getData()
     }
 
     /*
@@ -196,6 +198,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, PermissionListener
 
     override fun onPermissionGranted(response: PermissionGrantedResponse?) {
         getCurrentLocation()
+        fusedLocationProviderClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                //gets API data and places on mMap
+                getData(LatLng(location!!.latitude, location!!.longitude))
+            }
         mMap.isMyLocationEnabled = true
     }
 
